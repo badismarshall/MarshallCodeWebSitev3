@@ -53,6 +53,7 @@ export const POST = withApi(
     );
     const mediaRuntime = {
       apiKey: runtime.apiKey,
+      baseURL: runtime.baseURL,
       model: runtime.imageModel,
       defaults: runtime.settings.imageDefaults,
       styleGuidance: runtime.settings.brandVoice.imageStyle,

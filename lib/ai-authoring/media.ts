@@ -258,6 +258,7 @@ async function storeGeneratedImage(
 
 type AIAuthoringMediaRuntime = {
   apiKey?: string;
+  baseURL?: string;
   model?: string;
   defaults?: Partial<Pick<AIAuthoringMediaOptions, "size" | "quality">>;
   /** Settings → AI brand image style, appended to generation prompts. */
@@ -271,7 +272,7 @@ export async function generateAuthoringMedia(
   options: AIAuthoringMediaOptions = {},
   runtime: AIAuthoringMediaRuntime = {},
 ): Promise<AIAuthoringMediaResponse> {
-  const client = createAIAuthoringOpenAIClient(runtime.apiKey);
+  const client = createAIAuthoringOpenAIClient(runtime.apiKey, runtime.baseURL);
   const outputFormat = options.outputFormat || "png";
   const response = (await client.images.generate({
     model:
@@ -360,7 +361,7 @@ export async function editAuthoringMedia(
   const { buffer: sourceBuffer, contentType: sourceContentType } =
     await fetchSourceImage(request.sourceUrl);
 
-  const client = createAIAuthoringOpenAIClient(runtime.apiKey);
+  const client = createAIAuthoringOpenAIClient(runtime.apiKey, runtime.baseURL);
   const outputFormat = options.outputFormat || "png";
   const sourceFile = await toFile(
     sourceBuffer,

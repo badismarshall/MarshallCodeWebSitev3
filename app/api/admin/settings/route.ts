@@ -111,6 +111,17 @@ import {
 import { validateSmsSettings } from "@/lib/sms/sms-settings";
 import { validateMobileAppSettings } from "@/lib/settings/mobile-app";
 
+// Model ids renamed in the DeepSeek switch. A settings document written before
+// it still holds a gpt id that the new enums no longer accept, and `save()`
+// re-validates the whole document — so a save of any section fails on the stale
+// id until it is rewritten here.
+const LEGACY_AI_MODEL_TO_DEEPSEEK: Record<string, string> = {
+  "gpt-4.1-mini": "deepseek-flash",
+  "gpt-4.1": "deepseek-v4-pro",
+  "gpt-5-mini": "deepseek-flash",
+  "gpt-5-nano": "deepseek-flash",
+  "gpt-5": "deepseek-v4-pro",
+};
 
 function toPlainRecord(value: unknown): Record<string, unknown> {
   if (isPlainObject(value)) return value;
@@ -1653,6 +1664,29 @@ export const PUT = withApi(
         );
       });
     }
+    // Rewrite model ids left over from before the DeepSeek switch, or the enum
+    // validators `save()` runs reject the whole document on an unrelated save.
+    const legacySalesModel = settings.aiSalesAgent?.model;
+    if (
+      typeof legacySalesModel === "string" &&
+      LEGACY_AI_MODEL_TO_DEEPSEEK[legacySalesModel]
+    ) {
+      settings.set(
+        "aiSalesAgent.model",
+        LEGACY_AI_MODEL_TO_DEEPSEEK[legacySalesModel],
+      );
+    }
+    const legacyTextModel = settings.aiAuthoring?.textModel;
+    if (
+      typeof legacyTextModel === "string" &&
+      LEGACY_AI_MODEL_TO_DEEPSEEK[legacyTextModel]
+    ) {
+      settings.set(
+        "aiAuthoring.textModel",
+        LEGACY_AI_MODEL_TO_DEEPSEEK[legacyTextModel],
+      );
+    }
+
     await settings.save();
 
     // Push a changed default onto the vendors still sitting on the old one.

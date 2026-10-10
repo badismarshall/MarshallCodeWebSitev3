@@ -345,6 +345,7 @@ Used when the optional `[password]` / `[name]` arguments are omitted from
 | Variable                 | Description                                                                                                                                            |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `OPENAI_API_KEY`         | API key for AI features. **Billed per token by OpenAI.** Leave blank to disable.                                                                       |
+| `OPENAI_BASE_URL`        | Optional custom OpenAI-compatible API endpoint (gateway/proxy). Leave blank for the default `https://api.openai.com/v1`.                              |
 | `AI_HERO_BANNER_ENABLED` | Set to `true` to enable admin Hero banner generation. Requires `OPENAI_API_KEY`; defaults to disabled and does not affect other AI authoring features. |
 
 ### Web Push notifications (optional)

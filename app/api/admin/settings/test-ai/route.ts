@@ -1,8 +1,8 @@
 /**
  * POST /api/admin/settings/test-ai
- * Verify an OpenAI API key works. Tests the key from the request body when
- * provided (the unsaved form value); otherwise the stored/env-resolved key.
- * Never echoes any key back.
+ * Verify an OpenAI API key works. Tests the key (and optional base URL) from
+ * the request body when provided (the unsaved form values); otherwise the
+ * stored/env-resolved values. Never echoes any key back.
  */
 
 import { NextResponse } from "next/server";
@@ -12,7 +12,10 @@ import { resolveOpenAICredentials } from "@/lib/settings/credentials";
 import * as z from "zod";
 import { withApi } from "@/lib/api/handler";
 
-const TestAiSchema = z.object({ apiKey: z.string().max(500).optional() });
+const TestAiSchema = z.object({
+  apiKey: z.string().max(500).optional(),
+  baseURL: z.string().max(500).optional(),
+});
 
 export const POST = withApi(
   {
@@ -25,20 +28,23 @@ export const POST = withApi(
   async ({ request }) => {
     try {
       let candidateKey = "";
+      let candidateBaseURL = "";
       try {
         const body = TestAiSchema.parse(await request.json());
         if (typeof body.apiKey === "string") {
           candidateKey = body.apiKey.trim();
         }
+        if (typeof body.baseURL === "string") {
+          candidateBaseURL = body.baseURL.trim();
+        }
       } catch {
-        // Empty body is fine — fall through to the stored key.
+        // Empty body is fine — fall through to the stored values.
       }
 
-      let apiKey = candidateKey;
-      if (!apiKey) {
-        const settings = await getSettings();
-        apiKey = resolveOpenAICredentials(settings.aiAuthoring).apiKey || "";
-      }
+      const settings = await getSettings();
+      const resolved = resolveOpenAICredentials(settings.aiAuthoring);
+      const apiKey = candidateKey || resolved.apiKey || "";
+      const baseURL = candidateBaseURL || resolved.baseURL || "";
       if (!apiKey) {
         return NextResponse.json(
           {
@@ -50,7 +56,12 @@ export const POST = withApi(
         );
       }
 
-      const client = new OpenAI({ apiKey, timeout: 15000, maxRetries: 0 });
+      const client = new OpenAI({
+        apiKey,
+        timeout: 15000,
+        maxRetries: 0,
+        ...(baseURL ? { baseURL } : {}),
+      });
       await client.models.list();
 
       return NextResponse.json({

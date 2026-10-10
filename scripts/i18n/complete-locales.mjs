@@ -11,7 +11,7 @@ const client = new OpenAI({ maxRetries: 2, timeout: 180000 });
 const source = flattenMessages(JSON.parse(await readFile('locales/en.json', 'utf8')));
 const cacheDir = process.env.I18N_CACHE_DIR || '.codex/i18n-translations';
 await mkdir(cacheDir, { recursive: true });
-const model = process.env.I18N_TRANSLATION_MODEL || 'gpt-4.1-mini';
+const model = process.env.I18N_TRANSLATION_MODEL || 'deepseek-flash';
 const jobs = [], documents = new Map(), stats = { batches:0, translated:0, failed:0, inputTokens:0, outputTokens:0 };
 const cache = new Map();
 const saves = new Map();

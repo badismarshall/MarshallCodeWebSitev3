@@ -367,6 +367,7 @@ export function normalizeContentDraft(
 
 export type AIAuthoringContentRuntime = {
   apiKey?: string;
+  baseURL?: string;
   model?: string;
   brandVoice?: AIAuthoringBrandVoice;
 };
@@ -386,7 +387,7 @@ async function generateImageAltText(
     throw new Error("An image is required to write alt text");
   }
   const imageUrl = (await assertOwnStorageUrl(request.sourceUrl)).toString();
-  const client = createAIAuthoringOpenAIClient(runtime.apiKey);
+  const client = createAIAuthoringOpenAIClient(runtime.apiKey, runtime.baseURL);
   const title =
     typeof request.fields.title === "string"
       ? request.fields.title
@@ -394,7 +395,7 @@ async function generateImageAltText(
         ? request.fields.name
         : "";
   const response = await client.responses.create({
-    model: runtime.model || process.env.OPENAI_AUTHORING_TEXT_MODEL || "gpt-4.1-mini",
+    model: runtime.model || process.env.OPENAI_AUTHORING_TEXT_MODEL || "deepseek-flash",
     instructions: [
       "Write alt text for an ecommerce image, for screen readers and SEO.",
       `Reply in locale "${request.locale}".`,
@@ -431,12 +432,12 @@ export async function generateAuthoringContent(
   if (request.operation === "alt_text") {
     return generateImageAltText(request, runtime);
   }
-  const client = createAIAuthoringOpenAIClient(runtime.apiKey);
+  const client = createAIAuthoringOpenAIClient(runtime.apiKey, runtime.baseURL);
   const response = await client.responses.create({
     model:
       runtime.model ||
       process.env.OPENAI_AUTHORING_TEXT_MODEL ||
-      "gpt-4.1-mini",
+      "deepseek-flash",
     instructions: buildAuthoringInstructions(request, runtime.brandVoice),
     input: buildContentInput(request),
     text: buildContentResponseFormat(request),

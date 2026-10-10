@@ -27,6 +27,7 @@ export const POST = withApi(
     });
     const result = await createHeroBannerFromPayload(payload, process.env, {
       apiKey: authoring.apiKey,
+      baseURL: authoring.baseURL,
       textModel: authoring.textModel,
       imageModel: authoring.imageModel,
     });

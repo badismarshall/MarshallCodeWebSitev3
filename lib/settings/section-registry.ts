@@ -332,6 +332,7 @@ export const SETTINGS_SECTION_SCHEMAS = {
   aiAuthoring: section([
     "enabled",
     "apiKey",
+    "baseURL",
     "textModel",
     "imageModel",
     "surfaces",

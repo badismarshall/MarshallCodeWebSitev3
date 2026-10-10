@@ -1,8 +1,6 @@
 export type AISalesAgentModel =
-  | "gpt-5"
-  | "gpt-5-mini"
-  | "gpt-5-nano"
-  | "gpt-4.1-mini";
+  | "deepseek-flash"
+  | "deepseek-v4-pro";
 
 export type AISalesAgentReasoningEffort =
   | "minimal"
@@ -21,10 +19,8 @@ export const AI_SALES_AGENT_MODELS: ReadonlyArray<{
   label: string;
   reasoning: boolean;
 }> = [
-  { id: "gpt-5-mini", label: "GPT-5 mini", reasoning: true },
-  { id: "gpt-5", label: "GPT-5", reasoning: true },
-  { id: "gpt-5-nano", label: "GPT-5 nano", reasoning: true },
-  { id: "gpt-4.1-mini", label: "GPT-4.1 mini", reasoning: false },
+  { id: "deepseek-flash", label: "DeepSeek Flash", reasoning: false },
+  { id: "deepseek-v4-pro", label: "DeepSeek V4 Pro", reasoning: true },
 ];
 
 export const AI_SALES_AGENT_MODEL_IDS = AI_SALES_AGENT_MODELS.map(
@@ -41,7 +37,7 @@ export const AI_SALES_AGENT_TONES: ReadonlyArray<AISalesAgentTone> = [
   "luxury",
 ];
 
-export const DEFAULT_AI_SALES_AGENT_MODEL: AISalesAgentModel = "gpt-5-mini";
+export const DEFAULT_AI_SALES_AGENT_MODEL: AISalesAgentModel = "deepseek-flash";
 
 export function isReasoningModel(model: string): boolean {
   return AI_SALES_AGENT_MODELS.some(

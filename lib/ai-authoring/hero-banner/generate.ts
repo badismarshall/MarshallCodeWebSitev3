@@ -26,9 +26,9 @@ async function ownedSourceFile(sourceUrl: string) {
 export async function generateHeroBannerVisual(
   request: HeroBannerRequest,
   brief: HeroBannerBrief,
-  runtime: { apiKey?: string; imageModel?: string } = {},
+  runtime: { apiKey?: string; baseURL?: string; imageModel?: string } = {},
 ): Promise<Buffer> {
-  const client = createAIAuthoringOpenAIClient(runtime.apiKey);
+  const client = createAIAuthoringOpenAIClient(runtime.apiKey, runtime.baseURL);
   const prompt = buildHeroBannerVisualPrompt(request, brief);
   const common = {
     model:

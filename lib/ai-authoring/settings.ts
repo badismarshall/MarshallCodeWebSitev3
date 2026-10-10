@@ -2,10 +2,8 @@ import type { IAIAuthoringSettings } from "@/models/settings.model";
 import { resolveOpenAICredentials } from "@/lib/settings/credentials";
 
 const AI_AUTHORING_TEXT_MODEL_IDS = [
-  "gpt-4.1-mini",
-  "gpt-4.1",
-  "gpt-5-mini",
-  "gpt-5",
+  "deepseek-flash",
+  "deepseek-v4-pro",
 ] as const;
 
 const AI_AUTHORING_IMAGE_MODEL_IDS = [
@@ -13,7 +11,7 @@ const AI_AUTHORING_IMAGE_MODEL_IDS = [
   "gpt-image-1-mini",
 ] as const;
 
-const DEFAULT_AI_AUTHORING_TEXT_MODEL = "gpt-4.1-mini";
+const DEFAULT_AI_AUTHORING_TEXT_MODEL = "deepseek-flash";
 const DEFAULT_AI_AUTHORING_IMAGE_MODEL = "gpt-image-1";
 
 export const DEFAULT_AI_AUTHORING_SETTINGS: IAIAuthoringSettings = {
@@ -111,6 +109,9 @@ export function normalizeAIAuthoringSettings(
     ...(typeof value.apiKey === "string" && value.apiKey.trim()
       ? { apiKey: value.apiKey }
       : {}),
+    ...(typeof value.baseURL === "string" && value.baseURL.trim()
+      ? { baseURL: value.baseURL.trim() }
+      : {}),
     textModel,
     imageModel,
     surfaces: {
@@ -181,6 +182,8 @@ export type ResolvedAIAuthoringConfig = {
   settings: IAIAuthoringSettings;
   /** Resolved via credentials: DB value wins, OPENAI_API_KEY env fallback. */
   apiKey?: string;
+  /** Custom API endpoint; empty/absent = the default OpenAI endpoint. */
+  baseURL?: string;
   textModel: string;
   imageModel: string;
 };
@@ -194,9 +197,11 @@ export function resolveAIAuthoringConfig(
   raw: unknown,
 ): ResolvedAIAuthoringConfig {
   const settings = normalizeAIAuthoringSettings(raw);
+  const credentials = resolveOpenAICredentials(settings);
   return {
     settings,
-    apiKey: resolveOpenAICredentials(settings).apiKey,
+    apiKey: credentials.apiKey,
+    baseURL: credentials.baseURL,
     textModel:
       settings.textModel ||
       process.env.OPENAI_AUTHORING_TEXT_MODEL?.trim() ||

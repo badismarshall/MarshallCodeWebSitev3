@@ -171,6 +171,7 @@ function buildHeroBriefResponseFormat() {
 
 export type HeroBannerRuntime = {
   apiKey?: string;
+  baseURL?: string;
   textModel?: string;
   imageModel?: string;
 };
@@ -180,12 +181,12 @@ export async function interpretHeroBannerPrompt(
   runtime: HeroBannerRuntime = {},
 ): Promise<{ brief: HeroBannerBrief; warning?: string }> {
   try {
-    const client = createAIAuthoringOpenAIClient(runtime.apiKey);
+    const client = createAIAuthoringOpenAIClient(runtime.apiKey, runtime.baseURL);
     const response = await client.responses.create({
       model:
         runtime.textModel ||
         process.env.OPENAI_AUTHORING_TEXT_MODEL ||
-        "gpt-4.1-mini",
+        "deepseek-flash",
       instructions: buildHeroBriefInstructions(request.locale),
       input: request.prompt,
       text: buildHeroBriefResponseFormat(),

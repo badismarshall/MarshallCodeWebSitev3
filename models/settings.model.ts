@@ -1223,6 +1223,8 @@ export interface IAIAuthoringSettings {
   enabled: boolean;
   /** Shared OpenAI key for all AI features; OPENAI_API_KEY is the env fallback. */
   apiKey?: string;
+  /** Empty string = default OpenAI endpoint (https://api.openai.com/v1); OPENAI_BASE_URL is the env fallback. */
+  baseURL?: string;
   /** Empty string = inherit OPENAI_AUTHORING_TEXT_MODEL env or the built-in default. */
   textModel: string;
   /** Empty string = inherit OPENAI_AUTHORING_IMAGE_MODEL env or the built-in default. */
@@ -2844,8 +2846,8 @@ const SettingsSchema = new Schema<ISettings>(
           enabled: { type: Boolean, default: false },
           model: {
             type: String,
-            enum: ["gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-4.1-mini"],
-            default: "gpt-5-mini",
+            enum: ["deepseek-flash", "deepseek-v4-pro"],
+            default: "deepseek-flash",
           },
           temperature: { type: Number, default: 0.3, min: 0, max: 1 },
           reasoningEffort: {
@@ -2929,9 +2931,10 @@ const SettingsSchema = new Schema<ISettings>(
         {
           enabled: { type: Boolean, default: true },
           apiKey: String,
+          baseURL: String,
           textModel: {
             type: String,
-            enum: ["", "gpt-4.1-mini", "gpt-4.1", "gpt-5-mini", "gpt-5"],
+            enum: ["", "deepseek-flash", "deepseek-v4-pro"],
             default: "",
           },
           imageModel: {

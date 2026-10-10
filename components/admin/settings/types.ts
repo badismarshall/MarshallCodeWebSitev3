@@ -622,7 +622,7 @@ export interface Settings {
   };
   aiSalesAgent?: {
     enabled: boolean;
-    model: "gpt-5.4-mini" | "gpt-5.4" | "gpt-5.5" | "gpt-5.4-nano";
+    model: "deepseek-flash" | "deepseek-v4-pro";
     temperature: number;
     reasoningEffort: "none" | "low" | "medium" | "high";
     maxRecommendations: number;
@@ -650,7 +650,8 @@ export interface Settings {
     enabled: boolean;
     /** Write-only; the server strips it from every response. */
     apiKey?: string;
-    textModel: "" | "gpt-4.1-mini" | "gpt-4.1" | "gpt-5-mini" | "gpt-5";
+    baseURL?: string;
+    textModel: "" | "deepseek-flash" | "deepseek-v4-pro";
     imageModel: "" | "gpt-image-1" | "gpt-image-1-mini";
     surfaces: {
       products: boolean;

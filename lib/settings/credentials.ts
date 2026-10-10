@@ -111,6 +111,7 @@ const ENV = {
   plausibleApiKey: ["PLAUSIBLE_API_KEY"],
 
   openaiApiKey: ["OPENAI_API_KEY"],
+  openaiBaseUrl: ["OPENAI_BASE_URL"],
 
   expoAccessToken: ["EXPO_ACCESS_TOKEN"],
 
@@ -647,18 +648,22 @@ export function resolveAnalyticsConfig(
 
 interface ResolvedOpenAICredentials {
   apiKey?: string;
+  /** Custom API endpoint (e.g. an OpenAI-compatible gateway/proxy). */
+  baseURL?: string;
 }
 
 /**
  * One shared OpenAI credential for every AI feature (authoring/studio and the
- * sales agent). Stored on `settings.aiAuthoring`; `OPENAI_API_KEY` remains the
- * env fallback so existing installs keep working without touching Settings.
+ * sales agent). Stored on `settings.aiAuthoring`; `OPENAI_API_KEY` and
+ * `OPENAI_BASE_URL` remain the env fallbacks so existing installs keep
+ * working without touching Settings.
  */
 export function resolveOpenAICredentials(
-  ai?: { apiKey?: string } | null,
+  ai?: { apiKey?: string; baseURL?: string } | null,
 ): ResolvedOpenAICredentials {
   return {
     apiKey: pick(ai?.apiKey, ENV.openaiApiKey),
+    baseURL: pick(ai?.baseURL, ENV.openaiBaseUrl),
   };
 }
 
@@ -752,6 +757,7 @@ export interface CredentialEnvSources {
   };
   ai: {
     apiKey: boolean;
+    baseURL: boolean;
   };
   mobileApp: {
     expoAccessToken: boolean;
@@ -861,6 +867,7 @@ export function getCredentialEnvSources(): CredentialEnvSources {
     },
     ai: {
       apiKey: envSet(ENV.openaiApiKey),
+      baseURL: envSet(ENV.openaiBaseUrl),
     },
     mobileApp: {
       expoAccessToken: envSet(ENV.expoAccessToken),

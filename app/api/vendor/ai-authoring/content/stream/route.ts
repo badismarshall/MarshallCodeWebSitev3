@@ -41,6 +41,7 @@ export const POST = withApi(
 
     const stream = await streamAuthoringContent(authoringRequest, {
       apiKey: runtime.apiKey,
+      baseURL: runtime.baseURL,
       model: runtime.textModel,
       brandVoice: runtime.settings.brandVoice,
     });

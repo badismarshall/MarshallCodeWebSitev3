@@ -37,10 +37,8 @@ type ModelOption = {
 };
 
 const TEXT_MODELS: ModelOption[] = [
-  { value: "gpt-4.1-mini", name: "GPT-4.1 mini", note: "fastLowCost" },
-  { value: "gpt-4.1", name: "GPT-4.1", note: "higherQuality" },
-  { value: "gpt-5-mini", name: "GPT-5 mini" },
-  { value: "gpt-5", name: "GPT-5", note: "bestQuality" },
+  { value: "deepseek-flash", name: "DeepSeek Flash", note: "fastLowCost" },
+  { value: "deepseek-v4-pro", name: "DeepSeek V4 Pro", note: "bestQuality" },
 ];
 
 const IMAGE_MODELS: ModelOption[] = [
@@ -76,6 +74,7 @@ export function AiSettingsTab(props: {
   const ai = (settings.aiAuthoring || {}) as Partial<AiAuthoringSettings>;
   const apiKeySet = credentialMeta(settings, "aiAuthoring.apiKey").set;
   const envKeySet = Boolean(settings._meta?.envSources?.ai?.apiKey);
+  const envBaseUrlSet = Boolean(settings._meta?.envSources?.ai?.baseURL);
   const configured = apiKeySet || envKeySet || Boolean(ai.apiKey?.trim());
 
   const [testing, setTesting] = useState(false);
@@ -113,7 +112,7 @@ export function AiSettingsTab(props: {
       const response = await fetch("/api/admin/settings/test-ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey: ai.apiKey || "" }),
+        body: JSON.stringify({ apiKey: ai.apiKey || "", baseURL: ai.baseURL || "" }),
       });
       const result = (await response.json()) as {
         success?: boolean;
@@ -210,6 +209,27 @@ export function AiSettingsTab(props: {
             </p>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="ai-base-url">
+              {tSafe("admin.settings.ai.baseUrl", "API base URL (optional)")}
+            </Label>
+            <Input
+              id="ai-base-url"
+              value={ai.baseURL || ""}
+              placeholder="https://api.openai.com/v1"
+              onChange={(event) =>
+                updateNestedField("aiAuthoring.baseURL", event.target.value)
+              }
+            />
+            <EnvSourceHint show={envBaseUrlSet} />
+            <p className="text-xs text-muted-foreground">
+              {tSafe(
+                "admin.settings.ai.baseUrlHint",
+                "Point AI features at a custom OpenAI-compatible endpoint (a gateway or proxy). Leave empty to use the default OpenAI endpoint.",
+              )}
+            </p>
+          </div>
+
           <div className="flex flex-wrap items-center gap-3">
             <Button
               type="button"
@@ -263,7 +283,7 @@ export function AiSettingsTab(props: {
                 <SelectItem value={DEFAULT_MODEL_VALUE}>
                   {tSafe(
                     "admin.settings.ai.modelDefault",
-                    "Default (gpt-4.1-mini or environment override)",
+                    "Default (deepseek-flash or environment override)",
                   )}
                 </SelectItem>
                 {TEXT_MODELS.map((model) => (

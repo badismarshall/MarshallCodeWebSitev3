@@ -33,6 +33,7 @@ export const POST = withApi(
 
     const draft = await generateAuthoringContent(authoringRequest, {
       apiKey: runtime.apiKey,
+      baseURL: runtime.baseURL,
       model: runtime.textModel,
       brandVoice: runtime.settings.brandVoice,
     });

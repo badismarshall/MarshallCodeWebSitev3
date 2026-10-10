@@ -245,9 +245,9 @@ type CartLike = { items?: CartItemLike[] };
 function createOpenAIClient(settings: ISettings) {
   // One shared OpenAI credential across AI features: the key saved in
   // Settings → AI wins, OPENAI_API_KEY env remains the fallback.
-  const { apiKey } = resolveOpenAICredentials(settings.aiAuthoring);
+  const { apiKey, baseURL } = resolveOpenAICredentials(settings.aiAuthoring);
   if (!apiKey) throw new Error("OpenAI API key is not configured");
-  return new OpenAI({ apiKey });
+  return new OpenAI({ apiKey, ...(baseURL ? { baseURL } : {}) });
 }
 
 function getOutputText(response: OpenAIResponseLike): string {

@@ -1761,7 +1761,7 @@ async function createSettings(Settings) {
     },
     aiSalesAgent: {
       enabled: false,
-      model: "gpt-5-mini",
+      model: "deepseek-flash",
       temperature: 0.3,
       reasoningEffort: "minimal",
       maxRecommendations: 4,

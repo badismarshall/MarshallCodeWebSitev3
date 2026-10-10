@@ -37,7 +37,7 @@ export async function streamAuthoringContent(
   request: AIAuthoringRequest,
   runtime: AIAuthoringContentRuntime = {},
 ): Promise<ReadableStream<Uint8Array>> {
-  const client = createAIAuthoringOpenAIClient(runtime.apiKey);
+  const client = createAIAuthoringOpenAIClient(runtime.apiKey, runtime.baseURL);
   const isHtml =
     request.constraints?.html || request.operation === "rich_content";
   const instructions = [
@@ -53,7 +53,7 @@ export async function streamAuthoringContent(
     model:
       runtime.model ||
       process.env.OPENAI_AUTHORING_TEXT_MODEL ||
-      "gpt-4.1-mini",
+      "deepseek-flash",
     instructions,
     input: buildContentInput(request),
     stream: true,

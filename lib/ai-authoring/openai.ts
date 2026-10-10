@@ -16,13 +16,19 @@ type OpenAIResponseLike = {
 
 /**
  * Build the OpenAI client from a resolved key (Settings → AI, DB wins with
- * OPENAI_API_KEY env fallback). Callers that already ran the authoring gate
- * pass the runtime's key; the env-only default keeps older paths working.
+ * OPENAI_API_KEY env fallback) and, optionally, a custom base URL (DB value
+ * wins with OPENAI_BASE_URL env fallback). Callers that already ran the
+ * authoring gate pass the runtime's values; the env-only default keeps older
+ * paths working.
  */
-export function createAIAuthoringOpenAIClient(resolvedApiKey?: string): OpenAI {
+export function createAIAuthoringOpenAIClient(
+  resolvedApiKey?: string,
+  resolvedBaseURL?: string,
+): OpenAI {
   const apiKey = resolvedApiKey?.trim() || process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) throw new Error("OpenAI API key is not configured");
-  return new OpenAI({ apiKey });
+  const baseURL = resolvedBaseURL?.trim() || process.env.OPENAI_BASE_URL?.trim();
+  return new OpenAI({ apiKey, ...(baseURL ? { baseURL } : {}) });
 }
 
 export function extractOutputText(response: unknown): string {
