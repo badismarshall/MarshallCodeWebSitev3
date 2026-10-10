@@ -384,7 +384,6 @@ function CheckoutForm({
     removeItem,
     isLoading,
     hasShippableItems,
-    hasDigitalItems,
   } = useCart();
   // Digital-only carts (ebooks, downloads) skip the shipping address and
   // shipping method entirely — only a billing address is collected, matching
@@ -2293,18 +2292,13 @@ function CheckoutForm({
       });
     }
     // COD needs a hand-over to collect the cash at — a courier or a counter.
-    // Digital files have neither: they release off the order itself, before
-    // any cash could be collected. That rules COD out for any cart carrying a
-    // digital line, mixed carts included — not just downloads-only carts,
-    // where the money would never change hands at all. Pre-orders are out for
-    // the mirror-image reason: the seller commits stock at reservation time
-    // and the deposit/pay-later maths assume money moves NOW, while COD
-    // collects only at a door weeks away — a deposit pre-order on COD would
-    // reserve units having collected nothing. The server refuses both; this
-    // only keeps the option off the screen.
+    // Pre-orders are out: the seller commits stock at reservation time and
+    // the deposit/pay-later maths assume money moves NOW, while COD collects
+    // only at a door weeks away — a deposit pre-order on COD would reserve
+    // units having collected nothing. The server refuses it; this only keeps
+    // the option off the screen.
     if (
       paymentConfig.codEnabled &&
-      !hasDigitalItems &&
       !hasPreorderItems
     ) {
       // "Cash on delivery" is the wrong words for an order nobody delivers, so
@@ -2333,7 +2327,7 @@ function CheckoutForm({
     // a prepaid-only store, and a prepaid collection is the safer of the two
     // orders — see `pickupAvailable`.
     return methods;
-  }, [paymentConfig, fulfillmentMethod, hasDigitalItems, hasPreorderItems, t]);
+  }, [paymentConfig, fulfillmentMethod, hasPreorderItems, t]);
 
   // A pre-order that leaves a balance can only be placed on a method that can
   // come back for it (`lib/payments/balance-methods.ts`). The rest stay on the
@@ -2569,11 +2563,6 @@ function CheckoutForm({
       }
       if (data.paymentMethod === "cod" && paymentConfig.codEnabled === false) {
         throw new Error("Cash on Delivery is disabled");
-      }
-      if (data.paymentMethod === "cod" && hasDigitalItems) {
-        throw new Error(
-          "Cash on Delivery is not available for orders that include digital items",
-        );
       }
       if (data.paymentMethod === "cod" && hasPreorderItems) {
         throw new Error(

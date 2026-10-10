@@ -59,7 +59,6 @@ export async function placeCodOrder(
     isMultiVendorEnabled,
     orderSettings,
     hasPreorder,
-    hasDigitalItems,
     digitalOnly,
     normalizedShippingAddress,
     normalizedBillingAddress,
@@ -88,7 +87,6 @@ export async function placeCodOrder(
   assertCashOnDeliveryAllowed({
     settings: codSettings,
     total,
-    hasDigitalItems,
     hasPreorder,
   });
   // One order per cart — see `claimCartForOrder`.

@@ -417,7 +417,6 @@ export async function POST(request: NextRequest) {
 
     let totalWeight = 0;
     let hasShippableItems = false;
-    let hasDigitalItems = false;
     const vendorAgg = new Map<
       string,
       {
@@ -443,7 +442,6 @@ export async function POST(request: NextRequest) {
       });
       totalWeight += itemShipping.totalWeight;
       hasShippableItems ||= itemShipping.requiresShipping;
-      hasDigitalItems ||= !itemShipping.requiresShipping;
 
       const lineTotal = resolveCurrentItemPrice(item) * item.quantity;
       const vendorId = getOrderItemVendorId(
@@ -513,12 +511,11 @@ export async function POST(request: NextRequest) {
     });
     const tax = totals.tax;
     const total = totals.total + dutyAmount;
-    // The store's own cash-on-delivery rules: switched off, a minimum, a
-    // maximum a courier may carry, and no digital lines.
+    // The store's own cash-on-delivery rules: switched off, a minimum, and a
+    // maximum a courier may carry.
     assertCashOnDeliveryAllowed({
       settings: settings.payment?.cod,
       total,
-      hasDigitalItems,
     });
 
     // Generate order number (with retry for uniqueness)
